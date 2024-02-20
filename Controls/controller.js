@@ -2,9 +2,6 @@ const students = require("../Models/registrationModel");
 
 //postdata
 const postData = async (req, res) => {
-  // const profile = req.file.filename;
-  // console.log("s", req.files.idcards);
-
   let profile = [];
   let idcard = [];
   if (req.files) {
@@ -13,7 +10,6 @@ const postData = async (req, res) => {
   }
 
   const idcardFilenames = idcard.map((file) => file.filename);
-  console.log("as", idcardFilenames);
 
   const {
     studentname,
@@ -36,31 +32,30 @@ const postData = async (req, res) => {
   ) {
     res.status(400).json("all inputs required");
   } else {
-    // try {
-    let studDetails = await students.findOne({ studentname });
-    if (studDetails) {
-      res.status(400).json("student detail already present");
-    } else {
-      let newStudentData = new students({
-        studentname,
-        mobilenumber,
-        email,
-        gender,
-        coursemethod,
-        dob,
-        courses,
-        country,
-        profile,
-        id: idcardFilenames,
-      });
-      //  console.log("s", newStudentData);
+    try {
+      let studDetails = await students.findOne({ studentname });
+      if (studDetails) {
+        res.status(400).json("student detail already present");
+      } else {
+        let newStudentData = new students({
+          studentname,
+          mobilenumber,
+          email,
+          gender,
+          coursemethod,
+          dob,
+          courses,
+          country,
+          profile,
+          id: idcardFilenames,
+        });
 
-      await newStudentData.save();
-      res.status(200).json(newStudentData);
+        await newStudentData.save();
+        res.status(200).json(newStudentData);
+      }
+    } catch (error) {
+      res.status(400).json("connection error");
     }
-    // } catch (error) {
-    //   res.status(400).json("connection error");
-    // }
   }
 };
 
